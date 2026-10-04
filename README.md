@@ -103,6 +103,18 @@ http://SERVER_ADDRESS:8779
 Restrict this port to authorized management sources. Production approval
 requires TLS termination or an authenticated reverse proxy.
 
+## Validation
+
+Run the repository checks before committing or packaging:
+
+```bash
+bash tools/validate_release_candidate.sh
+```
+
+Clean-VM acceptance must validate installation, login, reboot persistence,
+training, manual scoring, live capture, alert correlation, runtime controls,
+purge behavior, roles, and a second installer execution.
+
 ## Release status
 
 | Item | Value |
@@ -114,7 +126,7 @@ requires TLS termination or an authenticated reverse proxy.
 | GUI port | `8779/tcp` |
 | Initial GUI username | `admin` |
 
-This release candidate is not approved for production. Use, modification, and
+Use, modification, and
 redistribution remain governed by `LICENSE`, `NOTICE`, and the required legal
 and intellectual-property approvals.
 
@@ -390,18 +402,6 @@ Core learning and scoring paths are centralized in
 `src/dns-ml-gui/src/settings.py`; preparation paths are defined in
 `src/dns-ml-gui/src/dns_log_preparation.py`. The expanded destination
 reference is in `docs/FILE_DESTINATIONS.md`.
-
-## Validation
-
-Run the repository checks before committing or packaging:
-
-```bash
-bash tools/validate_release_candidate.sh
-```
-
-Clean-VM acceptance must validate installation, login, reboot persistence,
-training, manual scoring, live capture, alert correlation, runtime controls,
-purge behavior, roles, and a second installer execution.
 
 ## Data policy
 
