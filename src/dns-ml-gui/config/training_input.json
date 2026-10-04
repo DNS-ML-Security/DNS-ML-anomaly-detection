@@ -1,0 +1,15 @@
+{
+  "input_format": "json",
+  "allowed_extensions": [
+    ".json",
+    ".jsonl",
+    ".log"
+  ],
+  "allow_archives": false,
+  "merge_all_uploaded_files": true,
+  "require_all_files_valid": true,
+  "uploaded_original_directory": "/data/dns-ml/training_upload/incoming",
+  "normalized_input_directory": "/data/dns-ml/training_upload/files",
+  "merged_output": "/data/dns-ml/zeek/merged_dns.jsonl",
+  "feature_output": "/data/dns-ml/features/dns_training_features.csv"
+}

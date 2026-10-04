@@ -1,0 +1,6 @@
+streamlit
+streamlit-cookies-controller==0.0.4
+pandas
+
+altair
+plotly>=5.20

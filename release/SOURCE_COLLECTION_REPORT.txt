@@ -1,0 +1,20 @@
+DNS ML ANOMALY DETECTION - SOURCE COLLECTION REPORT
+===================================================
+Product       : DNS ML Anomaly Detection
+Version       : v1.0.0-rc.1
+Collected UTC : 2026-10-01T11:09:15Z
+Engine source : /opt/dns-ml
+GUI source    : /opt/dns-ml-gui
+Collector     : collect_dns_ml_v1_source_v2.sh
+
+The installed POC was not modified. Operational data, credentials, databases,
+models, training data, logs, runtime state, caches, backups, packet captures,
+and previously generated archives were excluded.
+
+The resulting archive is a release-candidate input. It must still receive
+technical, security, legal, documentation, and management review before an
+approved Version 1 release is created.
+
+Collected files: 51
+Source bytes   : 870159
+Validation     : PASS

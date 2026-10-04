@@ -1,0 +1,47 @@
+[Unit]
+Description=DNS ML persistent learning capture and PCAP preparation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+UMask=0077
+
+WorkingDirectory=/data/dns-ml/dns_preparation
+
+Environment="PYTHONUNBUFFERED=1"
+Environment="PYTHONDONTWRITEBYTECODE=1"
+Environment="PYTHONPATH=/opt/dns-ml-gui:/opt/dns-ml"
+Environment="PATH=/opt/dns-ml/venv/bin:/opt/zeek/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+ExecStart=/opt/dns-ml/venv/bin/python /opt/dns-ml-gui/scripts/run_dns_learning_capture_service.py
+
+Restart=always
+RestartSec=3
+KillSignal=SIGTERM
+KillMode=control-group
+TimeoutStopSec=25
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/opt/dns-ml /opt/dns-ml-gui /opt/zeek
+ReadWritePaths=/data/dns-ml/dns_preparation
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+Private network literals sanitized in the temporary export only.
+Original address values are intentionally not recorded.
+
+src/dns-ml/generate_dns_test_data.py	RFC1918 replacements=8; unique-local IPv6 replacements=0
+src/dns-ml/score_dns_autoencoder_live.py	RFC1918 replacements=2; unique-local IPv6 replacements=0
+src/dns-ml/score_dns_heuristics_live.py	RFC1918 replacements=2; unique-local IPv6 replacements=0
+src/dns-ml-gui/config.json	RFC1918 replacements=2; unique-local IPv6 replacements=0

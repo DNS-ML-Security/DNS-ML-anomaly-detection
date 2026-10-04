@@ -1,0 +1,81 @@
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+credentials*
+secrets*
+tokens*
+
+# Authentication and application databases
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Operational data and logs
+*.log
+*.jsonl
+*.ndjson
+*.pcap
+*.pcapng
+*.csv
+*.tsv
+*.parquet
+*.feather
+runtime/
+state/
+runs/
+logs/
+alerts/
+uploads/
+training/
+features/
+backups/
+
+# Models and generated numerical artifacts
+*.joblib
+*.pkl
+*.pickle
+*.keras
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.pt
+*.pth
+*.onnx
+
+# Build and release artifacts
+dist/
+build/
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+SHA256SUMS.local
+

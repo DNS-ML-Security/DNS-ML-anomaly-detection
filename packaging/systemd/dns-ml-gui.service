@@ -1,0 +1,51 @@
+[Unit]
+Description=DNS ML Streamlit GUI
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+UMask=0077
+
+WorkingDirectory=/opt/dns-ml-gui
+
+Environment="PYTHONUNBUFFERED=1"
+Environment="PYTHONDONTWRITEBYTECODE=1"
+Environment="PYTHONPATH=/opt/dns-ml-gui:/opt/dns-ml"
+Environment="PATH=/opt/dns-ml/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+EnvironmentFile=-/etc/default/dns-ml-gui
+
+ExecStart=/opt/dns-ml/venv/bin/python -m streamlit run /opt/dns-ml-gui/app.py --server.address=0.0.0.0 --server.port=8779 --server.headless=true
+
+Restart=always
+RestartSec=5
+
+KillSignal=SIGINT
+KillMode=mixed
+TimeoutStopSec=30
+
+StandardOutput=journal
+StandardError=journal
+
+# The GUI currently manages Zeek and /etc/cron.d directly. These controls
+# reduce its writable filesystem and kernel surface while that privileged
+# design receives further security review.
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/opt/dns-ml /opt/dns-ml-gui
+ReadWritePaths=-/data/dns-ml -/etc/cron.d -/opt/zeek/etc -/opt/zeek/logs -/opt/zeek/spool
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

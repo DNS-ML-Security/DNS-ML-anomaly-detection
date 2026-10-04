@@ -1,0 +1,91 @@
+DNS ML ANOMALY DETECTION
+DRAFT RESPONSIBLE-USE SOURCE-AVAILABLE LICENSE 1.0
+
+Copyright (c) 2026 Ahmed Mekky. All rights reserved.
+
+IMPORTANT: This release-candidate license is a draft pending intellectual-
+property and legal review. Version v1.0.0-rc.1 is authorized only for private,
+approved evaluation. Public distribution requires written approval from the
+copyright owner and any other rights holder identified during legal review.
+
+1. Ownership
+
+The software, original documentation, integration logic, installation scripts,
+and other original materials in this repository are owned by Ahmed Mekky or by
+another rights holder where employment, contract, or applicable law provides
+otherwise. Third-party components remain subject to their own licenses.
+
+2. Approved scope
+
+Subject to this license, the software may be used for authorized defensive
+cybersecurity, DNS monitoring, anomaly detection, threat-intelligence
+correlation, incident response, security research, and security testing on
+systems and data for which the operator has permission.
+
+This software does not grant authority to intercept communications, capture
+traffic, scan systems, process personal data, or monitor networks without the
+permission required by law, contract, policy, and the system owner.
+
+3. Modification
+
+This software may be modified for an approved defensive purpose. Before
+redistributing or externally deploying a modified version, the modifier must
+contact the owner at ahmedmekkyf13@gmail.com, clearly identify the changes,
+retain the original ownership and license notices, and identify the modified
+build as unofficial.
+
+A modified version must not be represented as an official Ahmed Mekky release.
+The modifier must maintain a record of the modified files, purpose, date,
+responsible party, source commit, reviewer, and resulting release fingerprint.
+
+4. Responsibility for modified versions
+
+Any person or entity making, deploying, or distributing a modification is
+responsible for the modified version and its subsequent use. The original owner
+does not authorize, endorse, or accept responsibility for modifications
+intended to host or distribute malware, facilitate unauthorized access,
+conduct suspicious or unlawful activities, or support a purpose inconsistent
+with the documented and approved scope of use.
+
+Nothing in this provision excludes responsibility that cannot legally be
+excluded or transfers responsibility for the original, unmodified software.
+
+5. Prohibited use
+
+The software must not be used to perform unauthorized interception,
+surveillance, credential theft, malware delivery, persistence, destructive
+activity, service disruption, access to systems without permission, or any
+unlawful activity.
+
+6. Redistribution
+
+Redistribution of this release candidate, in source or binary form, is not
+permitted without prior written authorization. An approved future public
+release may replace this clause with legally reviewed distribution terms.
+
+7. No warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, NON-INFRINGEMENT, ACCURACY, AVAILABILITY, OR SECURITY. USE OF THE
+SOFTWARE IS AT THE USER'S OWN RISK AND MUST NOT REPLACE PROFESSIONAL SECURITY,
+LEGAL, PRIVACY, OR OPERATIONAL REVIEW.
+
+8. Limitation of liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE COPYRIGHT OWNER AND
+CONTRIBUTORS SHALL NOT BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL,
+CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM USE OR INABILITY TO USE THE
+SOFTWARE. THIS CLAUSE DOES NOT LIMIT LIABILITY THAT CANNOT LEGALLY BE LIMITED.
+
+9. Termination
+
+Permission terminates automatically upon material breach of this license. On
+termination, use and distribution must cease except where retention is legally
+required.
+
+10. Legal review
+
+These terms must receive qualified legal and intellectual-property review
+before public distribution or production approval.
+

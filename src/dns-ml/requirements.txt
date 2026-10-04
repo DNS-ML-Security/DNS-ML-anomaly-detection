@@ -1,0 +1,7 @@
+pandas
+numpy
+scikit-learn
+tensorflow-cpu
+joblib
+
+shap>=0.46
