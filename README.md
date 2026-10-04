@@ -17,6 +17,92 @@ operations. Processing and operational data remain on the deployed server.
 
 ![Demo Animation](DNS-ML-anomaly-detection.gif)
 
+## Capabilities
+
+- Imports newline-delimited Zeek DNS JSON records.
+- Converts an uploaded PCAP/PCAPNG into a downloadable Zeek JSON `dns.log`.
+- Runs a persistent, time-bounded live learning capture with suspend, resume,
+  hourly rotation, reboot recovery, automatic consolidation, and a 10 GiB cap.
+- Builds five-minute feature windows by source IP.
+- Trains and evaluates an Autoencoder and Isolation Forest.
+- Applies DNS heuristic rules in parallel with ML scoring.
+- Automatically calculates final correlated alerts.
+- Supports manual sample scoring and live Zeek capture workflows.
+- Provides local authentication and administrator, standard-user, and
+  alerts-only SOC roles.
+- Supports activation, pause, resume, deactivation, and runtime purge controls.
+
+## Installation candidate
+
+### Public GitHub installation
+
+After the repository visibility is changed to public, a fresh Ubuntu Server
+24.04 VM can install Git, clone the repository without GitHub authentication,
+and run the installer:
+
+```bash
+sudo apt update
+sudo apt install -y git
+
+git clone https://github.com/DNS-ML-Security/DNS-ML-anomaly-detection.git
+cd DNS-ML-anomaly-detection
+
+sudo bash install_dns_ml_anomaly_detection.sh
+```
+
+No GitHub account, GitHub CLI installation, web authorization, personal access
+token, or repository credential is required after the repository becomes
+public. The DNS ML application does not request or store GitHub credentials.
+
+The clone command creates a directory named exactly
+`DNS-ML-anomaly-detection`. Do not use `dns_ml_anomaly_detection`. If the
+repository has already been cloned, do not run the clone command again. Resume
+with:
+
+```bash
+cd DNS-ML-anomaly-detection
+git pull --ff-only
+sudo bash install_dns_ml_anomaly_detection.sh
+```
+
+Ubuntu may be running `unattended-upgrades` during installation. The installer
+waits safely for the `apt`/`dpkg` lock for up to 15 minutes. Do not delete lock
+files or terminate the automatic-update process.
+
+If an earlier release-candidate run stopped with a Zeek `NO_PUBKEY` or
+unreadable-key warning, pull the latest `main` branch and rerun the installer.
+It repairs the legacy repository files and installs the Zeek signing key under
+`/etc/apt/keyrings` with permissions readable by Ubuntu's `_apt` user.
+
+After the repository is cloned, the installer requests only the initial local
+GUI administrator password. The initial GUI username is `admin`.
+
+The only application configuration requested during a fresh installation is:
+
+```text
+Enter the initial GUI administrator password:
+Confirm the initial GUI administrator password:
+```
+
+Any non-empty matching password is accepted. The installer stores only a
+salted PBKDF2 password hash in the local authentication database.
+
+The installer does not inspect, select, or configure a Zeek capture interface.
+After installation, an administrator configures capture through the GUI. The
+selected interface may be addressless, but it must be operational,
+non-loopback, and different from the management/default-route interface.
+
+## Access
+
+After installation:
+
+```text
+http://SERVER_ADDRESS:8779
+```
+
+Restrict this port to authorized management sources. Production approval
+requires TLS termination or an authenticated reverse proxy.
+
 ## Release status
 
 | Item | Value |
@@ -32,20 +118,109 @@ This release candidate is not approved for production. Use, modification, and
 redistribution remain governed by `LICENSE`, `NOTICE`, and the required legal
 and intellectual-property approvals.
 
-## Capabilities
+## Workflows
 
-- Imports newline-delimited Zeek DNS JSON records.
-- Converts an uploaded PCAP/PCAPNG into a downloadable Zeek JSON `dns.log`.
-- Runs a persistent, time-bounded live learning capture with suspend, resume,
-  hourly rotation, reboot recovery, automatic consolidation, and a 10 GiB cap.
-- Builds five-minute feature windows by source IP.
-- Trains and evaluates an Autoencoder and Isolation Forest.
-- Applies DNS heuristic rules in parallel with ML scoring.
-- Automatically calculates final correlated alerts.
-- Supports manual sample scoring and live Zeek capture workflows.
-- Provides local authentication and administrator, standard-user, and
-  alerts-only SOC roles.
-- Supports activation, pause, resume, deactivation, and runtime purge controls.
+### 1. Fresh installation
+
+1. Clone the public `DNS-ML-anomaly-detection` repository directly with Git.
+2. Enter the cloned `DNS-ML-anomaly-detection` directory.
+3. Run `sudo bash install_dns_ml_anomaly_detection.sh`.
+4. Enter and confirm the initial `admin` GUI password.
+5. The installer deploys source, creates the virtual environment, installs
+   dependencies, initializes authentication, installs systemd, and starts the
+   GUI on port `8779`.
+6. Configure the authorized Zeek capture interface later through the GUI.
+
+### 2. Prepare a Zeek JSON dns.log
+
+Use the second GUI page, **DNS Log Preparation**, and select one workflow:
+
+1. Upload an approved `.pcap` or `.pcapng`; the persistent service processes it
+   with Zeek and provides the corresponding JSON `dns.log`.
+2. Select a dedicated capture interface and a preconfigured learning period,
+   from 1 hour through a maximum of 30 days, then activate live capture.
+   Suspend and resume preserve the job. Stop, time completion, or the 10 GiB
+   safety cap consolidates all hourly DNS segments.
+3. Active or suspended preparation survives GUI logout and server reboot.
+4. Live Zeek scoring capture is locked until preparation finishes or the live
+   learning capture is stopped and consolidated.
+
+### 3. Training and model finalization
+
+1. Upload approved Zeek DNS JSON/JSONL training files or the prepared JSON
+   `dns.log`.
+2. Merge, normalize, deduplicate, and validate the records.
+3. Extract the shared 36-feature, five-minute windows by source IP.
+4. Train the Autoencoder and Isolation Forest from the same finalized feature
+   dataset.
+5. Verify both model artifacts and training results.
+6. Finalize the learning lifecycle to unlock DNS scoring.
+
+Feature engineering and window aggregation are performed once. Each trainer
+consumes `/data/dns-ml/features/dns_training_features.csv` and does not repeat
+those operations.
+
+### 4. Live scoring and automatic correlation
+
+1. Select an operational, non-loopback capture interface that is different
+   from the management/default-route interface; an IP address is not required.
+2. Activate live scoring from **DNS Scoring → Runtime controls**.
+3. Zeek publishes DNS JSON under `/opt/zeek/logs/current/`.
+4. Autoencoder, Isolation Forest, and DNS heuristics evaluate the same current
+   DNS input.
+5. Final correlation runs after detector evaluation and produces the unified
+   final alerts automatically.
+6. The GUI refreshes runtime health, detector outputs, and correlated alerts.
+
+Pause retains runtime data while stopping scheduled evaluation. Resume
+restores the schedules. **Deactivate and purge** stops live operation and
+removes generated detector and final-correlation alerts and runtime state;
+trained models and finalized training data are retained.
+
+### 5. Manual one-shot scoring
+
+1. Keep live capture inactive.
+2. Provide the supported Zeek DNS JSON sample through the scoring interface.
+3. Start one-shot scoring.
+4. The three detector families evaluate the staged sample.
+5. Final correlation runs automatically after detector completion.
+6. Review each native alert tab and **Final Correlated Alerts**.
+
+### 6. Authentication and roles
+
+1. The initial local administrator signs in with username `admin`.
+2. The administrator can create administrators, standard users, and SOC
+   analysts.
+3. SOC analysts are limited to Alerts, Alert Details, and Source IP
+   Investigation.
+4. A normal page refresh restores the active browser session using an opaque
+   token; only its SHA-256 hash is stored locally.
+5. Sign-out, account disabling, password reset, or session expiry revokes the
+   corresponding session.
+
+### 7. Repository update and repeat installation
+
+```bash
+cd DNS-ML-anomaly-detection
+git pull --ff-only
+sha256sum --check release/SOURCE_TREE.sha256
+sudo bash install_dns_ml_anomaly_detection.sh
+```
+
+An existing authentication database and GUI configuration are preserved. The
+installer refreshes approved application source, dependencies, service files,
+and the running GUI.
+
+### 8. Release validation
+
+```bash
+sha256sum --check release/SOURCE_TREE.sha256
+bash tools/validate_release_candidate.sh
+```
+
+Version 1 approval additionally requires clean-VM installation, reboot,
+training, manual scoring, live capture, role restriction, alert purge,
+reinstallation, security, legal, and management testing.
 
 ## Repository structure
 
@@ -179,7 +354,7 @@ inventory because they must never be committed to the repository.
 | `/etc/cron.d/dns-ml-final-correlation` | Created by live-scoring activation | Final correlation schedule |
 | `/var/log/dns-ml-install.log` | Installer | Restricted installation audit and diagnostic log |
 
-### Runtime inputs, models, outputs, and state
+## Runtime inputs, models, outputs, and state
 
 | Runtime destination | Data owner | Purpose |
 |---|---|---|
@@ -216,181 +391,6 @@ Core learning and scoring paths are centralized in
 `src/dns-ml-gui/src/dns_log_preparation.py`. The expanded destination
 reference is in `docs/FILE_DESTINATIONS.md`.
 
-## Workflows
-
-### 1. Fresh installation
-
-1. Clone the public `DNS-ML-anomaly-detection` repository directly with Git.
-2. Enter the cloned `DNS-ML-anomaly-detection` directory.
-3. Run `sudo bash install_dns_ml_anomaly_detection.sh`.
-4. Enter and confirm the initial `admin` GUI password.
-5. The installer deploys source, creates the virtual environment, installs
-   dependencies, initializes authentication, installs systemd, and starts the
-   GUI on port `8779`.
-6. Configure the authorized Zeek capture interface later through the GUI.
-
-### 2. Prepare a Zeek JSON dns.log
-
-Use the second GUI page, **DNS Log Preparation**, and select one workflow:
-
-1. Upload an approved `.pcap` or `.pcapng`; the persistent service processes it
-   with Zeek and provides the corresponding JSON `dns.log`.
-2. Select a dedicated capture interface and a preconfigured learning period,
-   from 1 hour through a maximum of 30 days, then activate live capture.
-   Suspend and resume preserve the job. Stop, time completion, or the 10 GiB
-   safety cap consolidates all hourly DNS segments.
-3. Active or suspended preparation survives GUI logout and server reboot.
-4. Live Zeek scoring capture is locked until preparation finishes or the live
-   learning capture is stopped and consolidated.
-
-### 3. Training and model finalization
-
-1. Upload approved Zeek DNS JSON/JSONL training files or the prepared JSON
-   `dns.log`.
-2. Merge, normalize, deduplicate, and validate the records.
-3. Extract the shared 36-feature, five-minute windows by source IP.
-4. Train the Autoencoder and Isolation Forest from the same finalized feature
-   dataset.
-5. Verify both model artifacts and training results.
-6. Finalize the learning lifecycle to unlock DNS scoring.
-
-Feature engineering and window aggregation are performed once. Each trainer
-consumes `/data/dns-ml/features/dns_training_features.csv` and does not repeat
-those operations.
-
-### 4. Live scoring and automatic correlation
-
-1. Select an operational, non-loopback capture interface that is different
-   from the management/default-route interface; an IP address is not required.
-2. Activate live scoring from **DNS Scoring → Runtime controls**.
-3. Zeek publishes DNS JSON under `/opt/zeek/logs/current/`.
-4. Autoencoder, Isolation Forest, and DNS heuristics evaluate the same current
-   DNS input.
-5. Final correlation runs after detector evaluation and produces the unified
-   final alerts automatically.
-6. The GUI refreshes runtime health, detector outputs, and correlated alerts.
-
-Pause retains runtime data while stopping scheduled evaluation. Resume
-restores the schedules. **Deactivate and purge** stops live operation and
-removes generated detector and final-correlation alerts and runtime state;
-trained models and finalized training data are retained.
-
-### 5. Manual one-shot scoring
-
-1. Keep live capture inactive.
-2. Provide the supported Zeek DNS JSON sample through the scoring interface.
-3. Start one-shot scoring.
-4. The three detector families evaluate the staged sample.
-5. Final correlation runs automatically after detector completion.
-6. Review each native alert tab and **Final Correlated Alerts**.
-
-### 6. Authentication and roles
-
-1. The initial local administrator signs in with username `admin`.
-2. The administrator can create administrators, standard users, and SOC
-   analysts.
-3. SOC analysts are limited to Alerts, Alert Details, and Source IP
-   Investigation.
-4. A normal page refresh restores the active browser session using an opaque
-   token; only its SHA-256 hash is stored locally.
-5. Sign-out, account disabling, password reset, or session expiry revokes the
-   corresponding session.
-
-### 7. Repository update and repeat installation
-
-```bash
-cd DNS-ML-anomaly-detection
-git pull --ff-only
-sha256sum --check release/SOURCE_TREE.sha256
-sudo bash install_dns_ml_anomaly_detection.sh
-```
-
-An existing authentication database and GUI configuration are preserved. The
-installer refreshes approved application source, dependencies, service files,
-and the running GUI.
-
-### 8. Release validation
-
-```bash
-sha256sum --check release/SOURCE_TREE.sha256
-bash tools/validate_release_candidate.sh
-```
-
-Version 1 approval additionally requires clean-VM installation, reboot,
-training, manual scoring, live capture, role restriction, alert purge,
-reinstallation, security, legal, and management testing.
-
-## Installation candidate
-
-### Public GitHub installation
-
-After the repository visibility is changed to public, a fresh Ubuntu Server
-24.04 VM can install Git, clone the repository without GitHub authentication,
-and run the installer:
-
-```bash
-sudo apt update
-sudo apt install -y git
-
-git clone https://github.com/DNS-ML-Security/DNS-ML-anomaly-detection.git
-cd DNS-ML-anomaly-detection
-
-sudo bash install_dns_ml_anomaly_detection.sh
-```
-
-No GitHub account, GitHub CLI installation, web authorization, personal access
-token, or repository credential is required after the repository becomes
-public. The DNS ML application does not request or store GitHub credentials.
-
-The clone command creates a directory named exactly
-`DNS-ML-anomaly-detection`. Do not use `dns_ml_anomaly_detection`. If the
-repository has already been cloned, do not run the clone command again. Resume
-with:
-
-```bash
-cd DNS-ML-anomaly-detection
-git pull --ff-only
-sudo bash install_dns_ml_anomaly_detection.sh
-```
-
-Ubuntu may be running `unattended-upgrades` during installation. The installer
-waits safely for the `apt`/`dpkg` lock for up to 15 minutes. Do not delete lock
-files or terminate the automatic-update process.
-
-If an earlier release-candidate run stopped with a Zeek `NO_PUBKEY` or
-unreadable-key warning, pull the latest `main` branch and rerun the installer.
-It repairs the legacy repository files and installs the Zeek signing key under
-`/etc/apt/keyrings` with permissions readable by Ubuntu's `_apt` user.
-
-After the repository is cloned, the installer requests only the initial local
-GUI administrator password. The initial GUI username is `admin`.
-
-The only application configuration requested during a fresh installation is:
-
-```text
-Enter the initial GUI administrator password:
-Confirm the initial GUI administrator password:
-```
-
-Any non-empty matching password is accepted. The installer stores only a
-salted PBKDF2 password hash in the local authentication database.
-
-The installer does not inspect, select, or configure a Zeek capture interface.
-After installation, an administrator configures capture through the GUI. The
-selected interface may be addressless, but it must be operational,
-non-loopback, and different from the management/default-route interface.
-
-## Access
-
-After installation:
-
-```text
-http://SERVER_ADDRESS:8779
-```
-
-Restrict this port to authorized management sources. Production approval
-requires TLS termination or an authenticated reverse proxy.
-
 ## Validation
 
 Run the repository checks before committing or packaging:
@@ -409,7 +409,7 @@ Do not commit Zeek logs, PCAPs, models, training data, generated alerts,
 runtime state, authentication databases, credentials, private keys, tokens,
 internal addresses, or sensitive screenshots.
 
-### Roadmap: version 2 (future expansion)
+## Roadmap: version 2 (future expansion)
 
 - **More models:** Combine additional machine-learning algorithms with AI
   techniques.
