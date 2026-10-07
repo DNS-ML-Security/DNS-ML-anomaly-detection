@@ -17,6 +17,8 @@ operations. Processing and operational data remain on the deployed server.
 
 ![Demo Animation](DNS-ML-anomaly-detection.gif)
 
+![DNS ML Anomaly Detection interface](DNS-ML-anomaly-detection-interface.png)
+
 ## Capabilities
 
 - Imports newline-delimited Zeek DNS JSON records.
@@ -325,12 +327,12 @@ the virtualization platform requires it.
 ## Complete project file inventory
 
 This inventory covers the complete Version 1 repository, including the demo
-animation supplied with the source repository.
+animation and interface screenshot supplied with the source repository.
 
 | Project location | Files | Responsibility |
 |---|---|---|
 | Repository root | `.gitignore`<br>`AUTHORS.md`<br>`CHANGELOG.md`<br>`CONTRIBUTIONS.md`<br>`LICENSE`<br>`NOTICE`<br>`README.md`<br>`SECURITY.md`<br>`THIRD_PARTY_NOTICES.md`<br>`VERSION` | Source-control exclusions, ownership, release history, security, licensing, and primary documentation |
-| Repository media | `DNS-ML-anomaly-detection.gif` | README demonstration animation |
+| Repository media | `DNS-ML-anomaly-detection.gif`<br>`DNS-ML-anomaly-detection-interface.png` | README demonstration animation and interface screenshot |
 | Installation | `install_dns_ml_anomaly_detection.sh` | One-command Ubuntu installation and repeatable upgrade entry point |
 | Architecture and release documents | `docs/APPROVAL_RECORD.md`<br>`docs/ARCHITECTURE.md`<br>`docs/FILE_DESTINATIONS.md`<br>`docs/KNOWN_LIMITATIONS.md`<br>`docs/RELEASE_CHECKLIST.md` | Design, approval, destination, limitation, and checklist documentation |
 | Service packaging | `packaging/systemd/dns-ml-gui.service`<br>`packaging/systemd/dns-ml-learning-capture.service` | Streamlit GUI and persistent DNS preparation systemd units |
